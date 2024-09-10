@@ -13,6 +13,12 @@ export class Authenticate {
   async execute({
     sessionId,
   }: AuthenticateRequest): Promise<AuthenticateResponse | null> {
-    return this.sessionGateway.find(sessionId);
+    const session = await this.sessionGateway.find(sessionId);
+
+    if (session && session.expiresAt.getTime() < Date.now()) {
+      return null;
+    }
+
+    return session;
   }
 }
