@@ -36,13 +36,14 @@ export class User extends Entity<UserProps> {
     id,
     email,
     password,
+    isPasswordHashed,
     createdAt,
     updatedAt,
   }: UserCreationData): User {
     return new User({
       id: new UUID(id),
       email: new Email(email),
-      password: new Password(password),
+      password: new Password(password, isPasswordHashed),
       createdAt: createdAt ?? new Date(),
       updatedAt,
     });
