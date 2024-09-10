@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('User not authenticated');
     }
 
-    request['user'] = { id: session.userId };
+    request['user'] = { id: session.userId, email: session.userEmail };
 
     return true;
   }

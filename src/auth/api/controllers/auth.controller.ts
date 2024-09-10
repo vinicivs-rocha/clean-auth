@@ -34,6 +34,10 @@ export class AuthController {
 
   @Get('me')
   async me(@User() user: UserSessionData) {
-    return { message: 'User fetched successfully', id: user.id };
+    return {
+      message: 'User fetched successfully',
+      id: user.id,
+      email: user.email,
+    };
   }
 }

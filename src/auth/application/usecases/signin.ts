@@ -37,6 +37,7 @@ export class Signin {
     const session = {
       id: randomUUID(),
       userId: user.id.value,
+      userEmail: user.email.value,
       createdAt: new Date(),
       expiresAt: new Date(Date.now() + 1000 * 60 * 60),
     };
