@@ -1,41 +1,40 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { Observable } from 'rxjs';
-import { Session } from 'src/auth/application/models/session';
+import { Authenticate } from 'src/auth/application/usecases/authenticate';
+import { Authorize } from 'src/auth/application/usecases/authorize';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private _reflector: Reflector) {}
+  constructor(
+    private _reflector: Reflector,
+    private _authenticate: Authenticate,
+    private _authorize: Authorize,
+  ) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this._reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-
-    if (isPublic) {
-      return true;
-    }
-
     const request: Request = context.switchToHttp().getRequest();
+    const sessionId: string | undefined = request.cookies['session.id'];
 
-    const session: Session | undefined = request['session'];
+    const session = await this._authenticate.execute({
+      sessionId: sessionId ?? '',
+    });
 
-    if (!session) {
-      throw new UnauthorizedException('User not authenticated');
-    }
+    const { isAuthorized } = await this._authorize.execute({
+      isPublic,
+      session,
+    });
 
-    request['user'] = { id: session.userId, email: session.userEmail };
+    request.user = {
+      id: session?.userId ?? '',
+      email: session?.userEmail ?? '',
+    };
 
-    return true;
+    return isAuthorized;
   }
 }

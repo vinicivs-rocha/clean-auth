@@ -12,17 +12,7 @@ export class Authenticate {
 
   async execute({
     sessionId,
-  }: AuthenticateRequest): Promise<AuthenticateResponse> {
-    const session = await this.sessionGateway.find(sessionId);
-
-    if (!session) {
-      throw new Error('Invalid session');
-    }
-
-    if (session.expiresAt < new Date()) {
-      throw new Error('Session expired');
-    }
-
-    return session;
+  }: AuthenticateRequest): Promise<AuthenticateResponse | null> {
+    return this.sessionGateway.find(sessionId);
   }
 }

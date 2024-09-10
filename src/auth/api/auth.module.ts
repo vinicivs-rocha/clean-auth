@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, Reflector } from '@nestjs/core';
 import { SessionGateway } from '../application/gateways/session';
 import { UserRepository } from '../application/repositories/user';
 import { HashingService } from '../application/services/hashing';
 import { Authenticate } from '../application/usecases/authenticate';
+import { Authorize } from '../application/usecases/authorize';
 import { Signin } from '../application/usecases/signin';
 import { MemorySessionGateway } from '../data/gateways/session.memory';
 import { MemoryUserRepository } from '../data/repositories/user.memory';
@@ -36,16 +37,24 @@ import { AuthGuard } from './guards/auth.guard';
       inject: ['SessionGateway', 'UserRepository', 'HashingService'],
     },
     {
-      provide: 'Authenticate',
+      provide: Authenticate,
       useFactory: (sessionGateway: SessionGateway) =>
         new Authenticate(sessionGateway),
       inject: ['SessionGateway'],
     },
     {
+      provide: Authorize,
+      useFactory: () => new Authorize(),
+    },
+    {
       provide: APP_GUARD,
-      useClass: AuthGuard,
+      useFactory: (
+        reflector: Reflector,
+        authenticate: Authenticate,
+        authorize: Authorize,
+      ) => new AuthGuard(reflector, authenticate, authorize),
+      inject: [Reflector, Authenticate, Authorize],
     },
   ],
-  exports: ['Authenticate'],
 })
 export class AuthModule {}
