@@ -1,8 +1,8 @@
 import { Entity } from '@core/domain/entity';
 import { Email } from '@core/domain/value-objects/email';
 import { UUID } from '@core/domain/value-objects/UUID';
+import { Password } from '../../value-objects/password';
 import { UserCreationData } from './user-data';
-import { Password } from './value-objects/password';
 
 export interface UserProps {
   id: UUID;
@@ -13,6 +13,25 @@ export interface UserProps {
 }
 
 export class User extends Entity<UserProps> {
+  get id(): UUID {
+    return this.props.id;
+  }
+
+  get email(): Email {
+    return this.props.email;
+  }
+
+  get password(): Password {
+    return this.props.password;
+  }
+
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+
+  get updatedAt(): Date | undefined {
+    return this.props.updatedAt;
+  }
   static create({
     id,
     email,
