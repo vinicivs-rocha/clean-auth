@@ -5,6 +5,7 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { AuthModule } from './auth/api/auth.module';
+import { SessionAuthenticatorMiddleware } from './auth/api/middlewares/session-authenticator.middleware';
 
 @Module({
   imports: [AuthModule],
@@ -14,7 +15,7 @@ import { AuthModule } from './auth/api/auth.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply()
+      .apply(SessionAuthenticatorMiddleware)
       .exclude({ path: 'auth/signin', method: RequestMethod.POST })
       .forRoutes('*');
   }
