@@ -14,6 +14,6 @@ export class UUID {
   }
 
   get value(): UUIDType {
-    return this.value;
+    return this._value;
   }
 }
