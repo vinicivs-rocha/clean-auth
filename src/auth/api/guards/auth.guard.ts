@@ -30,9 +30,9 @@ export class AuthGuard implements CanActivate {
       session,
     });
 
-    request.user = {
-      id: session?.userId ?? '',
-      email: session?.userEmail ?? '',
+    request.user = session && {
+      id: session.userId,
+      email: session.userEmail,
     };
 
     return isAuthorized;

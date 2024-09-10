@@ -8,8 +8,8 @@ export interface UserSessionData {
 declare global {
   namespace Express {
     interface Request {
-      session?: Session;
-      user?: UserSessionData;
+      session: Session | null;
+      user: UserSessionData | null;
     }
   }
 }
